@@ -44,7 +44,6 @@ public class FingerMovement : MonoBehaviour
             Finger _ring = _hand.GetRing();
             Finger _pinky = _hand.GetPinky();
 
-            Debug.Log(_thumb.TipPosition);
             attemptedPositions[0] = _thumb.TipPosition;
             attemptedPositions[1] = _index.TipPosition;
             attemptedPositions[2] = _middle.TipPosition;
@@ -70,7 +69,7 @@ public class FingerMovement : MonoBehaviour
             {
                 prevTipsPosition[i] = fingerTips[i].transform.position;
                 Vector3 movementDirection = attemptedPositions[i] - prevTipsPosition[i];
-                Collider bunnyCol = GameObject.Find("stanford-bunny").GetComponent<Collider>();
+                Collider bunnyCol = GameObject.FindWithTag("bunny").GetComponent<Collider>();
                 if (bunnyCol.bounds.Contains(attemptedPositions[i]))
                 {
                     Ray ray = new Ray(prevTipsPosition[i], movementDirection);
@@ -80,7 +79,7 @@ public class FingerMovement : MonoBehaviour
                         // add an offset to the hit point to make the finger tip stop before getting inside the mesh
                         hit.point += 0.00001f * hit.normal;
                         fingerTips[i].transform.position = hit.point;
-                        if (forcePerFinger[i] <= 2.5f) forcePerFinger[i] += 0.3f * movementDirection.magnitude;
+                        if (forcePerFinger[i] <= 5.0f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.3f * movementDirection.magnitude, 5f);
                         MeshDeformer deformer = hit.collider.GetComponent<MeshDeformer>();
                         if (deformer != null)
                         {

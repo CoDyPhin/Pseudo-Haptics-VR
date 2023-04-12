@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "com.htc.upm.vive.openxr": "1.0.10",
-    "com.ultraleap.tracking": "6.6.0",
+    "com.ultraleap.tracking": "6.7.0",
     "com.unity.collab-proxy": "2.0.0",
     "com.unity.feature.development": "1.0.1",
     "com.unity.feature.vr": "1.0.0",
@@ -14,8 +13,6 @@
     "com.unity.timeline": "1.6.4",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.8.0",
-    "com.unity.xr.hands": "1.1.0-pre.3",
-    "com.unity.xr.interaction.toolkit": "2.3.0",
     "com.unity.xr.management": "4.2.1",
     "com.valvesoftware.unity.openvr": "file:../Assets/SteamVR/OpenVRUnityXRPackage/Editor/com.valvesoftware.unity.openvr-1.1.4.tgz",
     "com.unity.modules.ai": "1.0.0",

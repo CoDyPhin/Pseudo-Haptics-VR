@@ -47,7 +47,7 @@ public class MeshDeformer : MonoBehaviour {
 				changedVertexCount++;
 			}
 		}
-		if(changedVertexCount >= 0.20f*displacedVertices.Length){
+		if(changedVertexCount >= 0.10f*displacedVertices.Length){
 			deformingMesh.vertices = displacedVertices;
 			deformingMesh.RecalculateNormals();
 			if(colliderUpdateTreshold > 0){
@@ -57,7 +57,6 @@ public class MeshDeformer : MonoBehaviour {
 			}
 			colliderUpdateTreshold = 20;
 			col.sharedMesh = deformingMesh;
-			//Debug.Log("Changed collider");
 			changed = true;
 			alreadyReset = false;
 		}
