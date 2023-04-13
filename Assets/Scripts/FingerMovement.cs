@@ -8,21 +8,29 @@ using Leap.Unity;
 public class FingerMovement : MonoBehaviour
 {
     [SerializeField] private GameObject[] fingerTips;
+
     private Vector3[] prevTipsPosition = new Vector3[5];
     private float[] forcePerFinger = {0f, 0f, 0f, 0f, 0f};
     [SerializeField] private Vector3[] attemptedPositions = new Vector3[5];
     private bool handDetected = false;
+    private Vector3[] fingerMovementDirection = new Vector3[5];
+    private bool[] collidingFingers = {false, false, false, false, false};
     
     public LeapProvider leapProvider;
     // Start is called before the first frame update
     void Start()
     {
-        
         for (int i = 0; i < 5; i++)
         {
             fingerTips[i].transform.position = attemptedPositions[i];
             prevTipsPosition[i] = fingerTips[i].transform.position;
+            fingerMovementDirection[i] = Vector3.zero;
         }
+    }
+
+    public void updateCollidingFingers(int fingerIndex, bool isColliding)
+    {
+        collidingFingers[fingerIndex] = isColliding;
     }
 
     // Update is called once per frame
@@ -49,6 +57,18 @@ public class FingerMovement : MonoBehaviour
             attemptedPositions[2] = _middle.TipPosition;
             attemptedPositions[3] = _ring.TipPosition;
             attemptedPositions[4] = _pinky.TipPosition;
+
+    
+            for (int i = 0; i < 5; i++)
+            {
+                fingerTips[i].transform.position = attemptedPositions[i];
+                fingerMovementDirection[i] = (fingerTips[i].transform.position - prevTipsPosition[i]);
+                /*Vector3 movementDirection = (fingerTips[i].transform.position - prevTipsPosition[i]);
+                if(movementDirection.normalized.Equals(Vector3.zero)) movementDirection = movementDirection.normalized;
+                fingerMovementDirection[i] = Vector3.Lerp(fingerMovementDirection[i], movementDirection, Time.deltaTime * 10f);
+                prevTipsPosition[i] = fingerTips[i].transform.position;*/
+            }
+
         }
         else
         {
@@ -67,31 +87,29 @@ public class FingerMovement : MonoBehaviour
         {
             for (int i = 0; i < 5; i++)
             {
-                prevTipsPosition[i] = fingerTips[i].transform.position;
-                Vector3 movementDirection = attemptedPositions[i] - prevTipsPosition[i];
+                //Debug.Log("finger " + i + " is colliding: " + collidingFingers[i]);
+                //prevTipsPosition[i] = fingerTips[i].transform.position;
                 Collider bunnyCol = GameObject.FindWithTag("bunny").GetComponent<Collider>();
-                if (bunnyCol.bounds.Contains(attemptedPositions[i]))
+                if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
+                //if(collidingFingers[i])
                 {
-                    Ray ray = new Ray(prevTipsPosition[i], movementDirection);
+                    Ray ray = new Ray(prevTipsPosition[i], fingerMovementDirection[i]);
                     RaycastHit hit;
-                    if (Physics.Raycast(ray, out hit))
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Object")))
                     {
-                        // add an offset to the hit point to make the finger tip stop before getting inside the mesh
                         hit.point += 0.00001f * hit.normal;
-                        fingerTips[i].transform.position = hit.point;
-                        if (forcePerFinger[i] <= 5.0f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.3f * movementDirection.magnitude, 5f);
+                        //fingerTips[i].transform.position = hit.point;
+                        if (forcePerFinger[i] <= 3.5f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.1f * fingerMovementDirection[i].magnitude, 3.5f);
                         MeshDeformer deformer = hit.collider.GetComponent<MeshDeformer>();
                         if (deformer != null)
                         {
-                            //Debug.Log("force: " + forcePerFinger[i]);
-                            //Debug.Log("hit point: " + hit.point);
                             deformer.AddDeformingForce(hit.point, forcePerFinger[i]);
                         }
                     }
                 }
                 else
                 {
-                    fingerTips[i].transform.position = attemptedPositions[i];
+                    prevTipsPosition[i] = fingerTips[i].transform.position;
                     forcePerFinger[i] = 0f;
                 }
             }

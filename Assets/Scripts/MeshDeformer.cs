@@ -12,10 +12,12 @@ public class MeshDeformer : MonoBehaviour {
 	Vector3[] vertexVelocities;
 	[SerializeField] MeshCollider col;
 	float uniformScale = 1f;
-	bool alreadyReset = false;
-	bool changed = false;
-	int colliderUpdateTreshold = 20;
+	//bool alreadyReset = false;
+	//bool changed = false;
+	//int colliderUpdateTreshold = 20;
 	Vector3 lastHitPoint = Vector3.zero;
+	[SerializeField] GameObject hand;
+	FingerMovement fingerScript;
 
 	void Start () {
 		if(damping <= 0) damping = 1;
@@ -28,13 +30,28 @@ public class MeshDeformer : MonoBehaviour {
 			displacedVertices[i] = originalVertices[i];
 		}
 		vertexVelocities = new Vector3[originalVertices.Length];
+		fingerScript = hand.GetComponent<FingerMovement>();
+	}
+
+	void OnTriggerEnter(Collider other){
+		fingerScript.updateCollidingFingers((other.gameObject.name[3]-'0')-1, true);
+	}
+
+	void OnTriggerExit(Collider other){
+		fingerScript.updateCollidingFingers((other.gameObject.name[3]-'0')-1, false);
 	}
 
 
 	void FixedUpdate () {
-		int changedVertexCount = 0;
+		//int changedVertexCount = 0;
 		uniformScale = transform.localScale.x;
-		if(!alreadyReset && !changed){
+		for (int i = 0; i < displacedVertices.Length; i++) {
+			UpdateVertex(i);
+		}
+		deformingMesh.vertices = displacedVertices;
+		deformingMesh.RecalculateNormals();
+		col.sharedMesh = deformingMesh;
+		/*if(!alreadyReset && !changed){
 			deformingMesh.vertices = originalVertices;
 			deformingMesh.RecalculateNormals();
 			col.sharedMesh = deformingMesh;
@@ -55,7 +72,7 @@ public class MeshDeformer : MonoBehaviour {
 				changedVertexCount = 0;
 				return;
 			}
-			colliderUpdateTreshold = 20;
+			colliderUpdateTreshold = 1;
 			col.sharedMesh = deformingMesh;
 			changed = true;
 			alreadyReset = false;
@@ -63,7 +80,7 @@ public class MeshDeformer : MonoBehaviour {
 		else{
 			changed = false;
 		}
-		changedVertexCount = 0;
+		changedVertexCount = 0;*/
 	}
 
 	void UpdateVertex (int i) {
