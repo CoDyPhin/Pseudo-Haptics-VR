@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(MeshFilter))]
 public class MeshDeformer : MonoBehaviour {
@@ -12,11 +14,8 @@ public class MeshDeformer : MonoBehaviour {
 	Vector3[] vertexVelocities;
 	[SerializeField] MeshCollider col;
 	float uniformScale = 1f;
-	//bool alreadyReset = false;
-	//bool changed = false;
-	//int colliderUpdateTreshold = 20;
-	Vector3 lastHitPoint = Vector3.zero;
-	[SerializeField] GameObject hand;
+	[SerializeField][Range(0f,1f)] float percentageTreshhold = 0.8f;
+	[SerializeField] int vertexGroups = 50;
 
 	void Start () {
 		if(damping <= 0) damping = 1;
@@ -29,6 +28,8 @@ public class MeshDeformer : MonoBehaviour {
 			displacedVertices[i] = originalVertices[i];
 		}
 		vertexVelocities = new Vector3[originalVertices.Length];
+		//if(percentageTreshhold < 0) percentageTreshhold = 0;
+		//if(percentageTreshhold > 100) percentageTreshhold = 100;
 	}
 
 
@@ -57,19 +58,37 @@ public class MeshDeformer : MonoBehaviour {
 
 	public void AddDeformingForce (Vector3 point, float force) {
 		point = transform.InverseTransformPoint(point);
-		//Debug.Log("After inverse transform: " + point);
-		for (int i = 0; i < displacedVertices.Length; i++) {
-			AddForceToVertex(i, point, force);
+		List<int> sortedVertices = DivideVertexesIntoGroups(point);
+		for (int i = 0; i < (percentageTreshhold * sortedVertices.Count); i++) {
+			AddForceToVertex(sortedVertices[i], point, force, ((i * vertexGroups) / sortedVertices.Count)+1);
 		}
 	}
 
-	void AddForceToVertex (int i, Vector3 point, float force) {
+	void AddForceToVertex (int i, Vector3 point, float force, int group) {
 		Vector3 pointToVertex = displacedVertices[i] - point;
 		pointToVertex *= uniformScale;
 		float attenuatedForce = -force / (1f + pointToVertex.sqrMagnitude);
-		if(Mathf.Abs(attenuatedForce) < 0.01f)
-			attenuatedForce = 0;
+		/*if(Mathf.Abs(attenuatedForce) < 0.01f)
+			attenuatedForce = 0;*/
 		float velocity = attenuatedForce * Time.deltaTime;
 		vertexVelocities[i] += pointToVertex.normalized * velocity;
 	}
+
+	
+	List<int> DivideVertexesIntoGroups(Vector3 hitpoint){
+		Dictionary<int, float> vertices = new Dictionary<int, float>();
+		for (int i = 0; i < displacedVertices.Length; i++) {
+			Vector3 pointToVertex = displacedVertices[i] - hitpoint;
+			pointToVertex *= uniformScale;
+			float distance = pointToVertex.sqrMagnitude;
+			vertices.Add(i, distance);
+		}
+		// get a list of the keys sorted by ascending values
+		List<int> sortedKeys = new List<int>(vertices.Keys);
+		sortedKeys.Sort(delegate(int a, int b) {
+			return vertices[a].CompareTo(vertices[b]);
+		});
+		return sortedKeys;
+	}
+
 }

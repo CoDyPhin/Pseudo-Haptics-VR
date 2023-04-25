@@ -1651,7 +1651,7 @@ MonoBehaviour:
   springForce: 100
   damping: 30
   col: {fileID: 7367787458132770775}
-  hand: {fileID: 5336407798735737788}
+  percentageTreshhold: 0.8
 --- !u!54 &7367787458132770777
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1705,7 +1705,7 @@ MonoBehaviour:
   springForce: 100
   damping: 30
   col: {fileID: 7554601178742917875}
-  hand: {fileID: 5336407798735737788}
+  percentageTreshhold: 0.8
 --- !u!54 &7554601178742917877
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1752,7 +1752,7 @@ MonoBehaviour:
   springForce: 100
   damping: 30
   col: {fileID: 7561427589950720419}
-  hand: {fileID: 5336407798735737788}
+  percentageTreshhold: 0.8
 --- !u!54 &7561427589950720418
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1833,7 +1833,7 @@ MonoBehaviour:
   springForce: 100
   damping: 30
   col: {fileID: 8731268123323446867}
-  hand: {fileID: 5336407798735737788}
+  percentageTreshhold: 0.8
 --- !u!54 &8731268123323446869
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1921,7 +1921,7 @@ MonoBehaviour:
   springForce: 100
   damping: 30
   col: {fileID: 8875661940070332692}
-  hand: {fileID: 5336407798735737788}
+  percentageTreshhold: 0.8
 --- !u!54 &8875661940070332694
 Rigidbody:
   m_ObjectHideFlags: 0
