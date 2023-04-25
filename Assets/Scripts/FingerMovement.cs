@@ -14,9 +14,14 @@ public class FingerMovement : MonoBehaviour
     [SerializeField] private Vector3[] attemptedPositions = new Vector3[5];
     private bool handDetected = false;
     private Vector3[] fingerMovementDirection = new Vector3[5];
-    private bool[] collidingFingers = {false, false, false, false, false};
     
     public LeapProvider leapProvider;
+    private Hand lastFrameHand;
+    private bool inContact = false;
+    /*[SerializeField] private GameObject hand1;
+    [SerializeField] private GameObject hand2;
+    private CapsuleHandRemake hand1Script;
+    private CapsuleHandRemake hand2Script;*/
     // Start is called before the first frame update
     void Start()
     {
@@ -26,11 +31,8 @@ public class FingerMovement : MonoBehaviour
             prevTipsPosition[i] = fingerTips[i].transform.position;
             fingerMovementDirection[i] = Vector3.zero;
         }
-    }
-
-    public void updateCollidingFingers(int fingerIndex, bool isColliding)
-    {
-        collidingFingers[fingerIndex] = isColliding;
+        //hand1Script = hand1.GetComponent<CapsuleHandRemake>();
+        //hand2Script = hand2.GetComponent<CapsuleHandRemake>();
     }
 
     // Update is called once per frame
@@ -46,6 +48,7 @@ public class FingerMovement : MonoBehaviour
                 toggleTips(handDetected);
             }
             Hand _hand = _allHands[0];
+            if(!inContact) lastFrameHand = _hand;
             Finger _thumb = _hand.GetThumb();
             Finger _index = _hand.GetIndex();
             Finger _middle = _hand.GetMiddle();
@@ -83,16 +86,15 @@ public class FingerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        inContact = false;
         if (handDetected)
         {
             for (int i = 0; i < 5; i++)
             {
-                //Debug.Log("finger " + i + " is colliding: " + collidingFingers[i]);
-                //prevTipsPosition[i] = fingerTips[i].transform.position;
                 Collider bunnyCol = GameObject.FindWithTag("bunny").GetComponent<Collider>();
                 if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
-                //if(collidingFingers[i])
                 {
+                    inContact = true;
                     Ray ray = new Ray(prevTipsPosition[i], fingerMovementDirection[i]);
                     RaycastHit hit;
                     if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Object")))
