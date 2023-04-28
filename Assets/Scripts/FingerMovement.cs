@@ -16,12 +16,9 @@ public class FingerMovement : MonoBehaviour
     private Vector3[] fingerMovementDirection = new Vector3[5];
     
     public LeapProvider leapProvider;
-    private Hand lastFrameHand;
-    private bool inContact = false;
-    /*[SerializeField] private GameObject hand1;
-    [SerializeField] private GameObject hand2;
-    private CapsuleHandRemake hand1Script;
-    private CapsuleHandRemake hand2Script;*/
+
+    private List<Transform> fingers = new List<Transform>();
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -31,8 +28,61 @@ public class FingerMovement : MonoBehaviour
             prevTipsPosition[i] = fingerTips[i].transform.position;
             fingerMovementDirection[i] = Vector3.zero;
         }
-        //hand1Script = hand1.GetComponent<CapsuleHandRemake>();
-        //hand2Script = hand2.GetComponent<CapsuleHandRemake>();
+        
+        foreach(Transform finger in this.transform){
+            fingers.Add(finger);
+        }
+    }
+
+    void CreateHandWithLeapPositions(){
+        List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
+        if (_allHands.Count > 0)
+        {
+            Hand _hand = _allHands[0];
+            List<Finger> _fingers = _hand.Fingers;
+            bool aux = true;
+            for(int n = 0; n < 5; n++){
+                Transform currentFinger = fingers[n];
+                aux = true;
+                foreach(Transform child in currentFinger){
+                    int counter = 0;
+                    foreach(Transform element in child){
+                        if(aux){ // joints
+                            if(counter==3){
+                                element.position = _fingers[n].TipPosition;
+                            }
+                            else {
+                                if(n == 0){ // special case for thumb
+                                    element.position = _fingers[n].bones[counter+1].NextJoint;
+                                }
+                                else{
+                                    element.position = _fingers[n].bones[counter].NextJoint;
+                                }
+                                
+                            }
+                        }
+                        else{ // bones
+                            if(n == 0){ // special case for thumb
+                                element.position = _fingers[n].bones[counter+1].Center;
+                                element.rotation = _fingers[n].bones[counter+1].Rotation;
+                                element.localScale = new Vector3(0.01f, _fingers[n].bones[counter+1].Length/2f, 0.01f);
+                            }
+                            else{
+                                element.position = _fingers[n].bones[counter].Center;
+                                element.rotation = _fingers[n].bones[counter].Rotation;
+                                element.localScale = new Vector3(0.01f, _fingers[n].bones[counter].Length/2f, 0.01f);
+
+                            }
+                            element.Rotate(90f, 0f, 0f);
+
+                        }
+                        counter++;
+                    }
+                    aux = false;
+                }
+            }
+        }
+
     }
 
     // Update is called once per frame
@@ -48,7 +98,6 @@ public class FingerMovement : MonoBehaviour
                 toggleTips(handDetected);
             }
             Hand _hand = _allHands[0];
-            if(!inContact) lastFrameHand = _hand;
             Finger _thumb = _hand.GetThumb();
             Finger _index = _hand.GetIndex();
             Finger _middle = _hand.GetMiddle();
@@ -66,11 +115,8 @@ public class FingerMovement : MonoBehaviour
             {
                 fingerTips[i].transform.position = attemptedPositions[i];
                 fingerMovementDirection[i] = (fingerTips[i].transform.position - prevTipsPosition[i]);
-                /*Vector3 movementDirection = (fingerTips[i].transform.position - prevTipsPosition[i]);
-                if(movementDirection.normalized.Equals(Vector3.zero)) movementDirection = movementDirection.normalized;
-                fingerMovementDirection[i] = Vector3.Lerp(fingerMovementDirection[i], movementDirection, Time.deltaTime * 10f);
-                prevTipsPosition[i] = fingerTips[i].transform.position;*/
             }
+            CreateHandWithLeapPositions();
 
         }
         else
@@ -86,7 +132,6 @@ public class FingerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        inContact = false;
         if (handDetected)
         {
             for (int i = 0; i < 5; i++)
@@ -94,7 +139,6 @@ public class FingerMovement : MonoBehaviour
                 Collider bunnyCol = GameObject.FindWithTag("bunny").GetComponent<Collider>();
                 if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
                 {
-                    inContact = true;
                     Ray ray = new Ray(prevTipsPosition[i], fingerMovementDirection[i]);
                     RaycastHit hit;
                     if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Object")))
