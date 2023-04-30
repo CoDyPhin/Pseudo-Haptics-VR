@@ -10,7 +10,7 @@ namespace DitzelGames.FastIK
     /// </summary>
     public class FastIKFabric : MonoBehaviour
     {
-        public bool activeRK = false;
+        //public bool activeRK = false;
         /// <summary>
         /// Chain length of bones
         /// </summary>
@@ -21,6 +21,8 @@ namespace DitzelGames.FastIK
         /// </summary>
         public Transform Target;
         public Transform Pole;
+
+        
 
         /// <summary>
         /// Solver iterations per update
@@ -51,8 +53,12 @@ namespace DitzelGames.FastIK
 
 
         // Start is called before the first frame update
-        void Awake()
+        /*void Awake()
         {
+            Init();
+        }*/
+
+        void OnEnable(){
             Init();
         }
 
@@ -114,12 +120,12 @@ namespace DitzelGames.FastIK
         // Update is called once per frame
         void LateUpdate()
         {
-            if(activeRK) ResolveIK();
+            /*if(activeRK)*/ ResolveIK();
         }
 
-        public void activateRK(bool active){
+        /*public void activateRK(bool active){
             activeRK = active;
-        }
+        }*/
 
         private void ResolveIK()
         {

@@ -62,6 +62,7 @@ public class FingerMovement : MonoBehaviour
                 {
                     hit.point += 0.00001f * hit.normal;
                     targetTransforms[i].position = hit.point;
+                    //targetTransforms[i].rotation = Quaternion.LookRotation(hit.normal);
                     //targetTransforms[i].position = fingerTips[i].transform.position;
                     //fingerIKs[i].activateRK(true);
                     toggleReverseKinematics(i, true);
@@ -86,7 +87,12 @@ public class FingerMovement : MonoBehaviour
 
     void toggleReverseKinematics(int i, bool state)
     {
-        //fingerIKs[i].activateRK(state);
+        if(state){
+            fingerIKs[i].enabled = true;
+        }
+        else{
+            fingerIKs[i].enabled = false;
+        }
         //bool first = true;
         if(i == 0){
             this.GetComponent<HandPositions>().toggleThumb(!state);
