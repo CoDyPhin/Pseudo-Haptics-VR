@@ -13,7 +13,7 @@ public class LinkPosition : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if(active){
             this.transform.position = targetTransform.position;

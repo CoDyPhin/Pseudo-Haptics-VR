@@ -16,6 +16,10 @@ public class FingerMovement : MonoBehaviour
     private Vector3[] fingerMovementDirection = new Vector3[5];
 
     [SerializeField] private Transform[] targetTransforms = new Transform[5];
+    [SerializeField] private Transform[] targetPoles = new Transform[5];
+    [SerializeField] private Transform[] baseBones = new Transform[5];
+    [SerializeField] private Transform[] mainJoints = new Transform[5];
+
     [SerializeField] private GameObject[] fingerIKObjects = new GameObject[5];
     private FastIKFabric[] fingerIKs = new FastIKFabric[5];
 
@@ -62,9 +66,10 @@ public class FingerMovement : MonoBehaviour
                 {
                     hit.point += 0.00001f * hit.normal;
                     targetTransforms[i].position = hit.point;
-                    //targetTransforms[i].rotation = Quaternion.LookRotation(hit.normal);
-                    //targetTransforms[i].position = fingerTips[i].transform.position;
-                    //fingerIKs[i].activateRK(true);
+                    targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
+                    /*List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
+                    Hand _hand = _allHands[0];
+                    targetPoles[i].position = fingerTips[i].transform.position + _hand.Fingers[i].Direction.normalized * 0.5f;*/
                     toggleReverseKinematics(i, true);
                     if (forcePerFinger[i] <= 3.5f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.1f * fingerMovementDirection[i].magnitude, 3.5f);
                     MeshDeformer deformer = hit.collider.GetComponent<MeshDeformer>();
@@ -87,12 +92,7 @@ public class FingerMovement : MonoBehaviour
 
     void toggleReverseKinematics(int i, bool state)
     {
-        if(state){
-            fingerIKs[i].enabled = true;
-        }
-        else{
-            fingerIKs[i].enabled = false;
-        }
+        fingerIKs[i].enabled = state;
         //bool first = true;
         if(i == 0){
             this.GetComponent<HandPositions>().toggleThumb(!state);
@@ -145,5 +145,28 @@ public class FingerMovement : MonoBehaviour
             }
         }
         
+    }
+
+    Vector3 GetPerpendicularIntersection(Vector3 position1, Vector3 position2, Vector3 intersectionPosition)
+    {
+        // Calculate the vector between the two given positions
+        Vector3 direction = position2 - position1;
+
+        // Calculate the intersection of the vector and the plane passing through the intersection position and perpendicular to the vector
+        Vector3 intersection = intersectionPosition - Vector3.Dot(intersectionPosition - position1, direction.normalized) * direction.normalized;
+
+        // Calculate the vector from the intersection position to the calculated intersection point
+        Vector3 toIntersection = intersection - intersectionPosition;
+
+        // Calculate the perpendicular vector to the original vector and the vector from the intersection position to the calculated intersection point
+        Vector3 perpendicular = Vector3.Cross(direction.normalized, toIntersection.normalized);
+
+        // Calculate the distance between the intersection of the first vector and the perpendicular line
+        float distance = Vector3.Dot(intersectionPosition - position1, direction.normalized);
+
+        // Calculate the position that is at least 2 distance units away from the intersection point towards the given position
+        Vector3 result = intersectionPosition + Mathf.Max(2f, 2f - distance) * direction.normalized + 2f * toIntersection.magnitude * perpendicular.normalized;
+
+        return result;
     }
 }

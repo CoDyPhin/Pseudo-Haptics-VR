@@ -2879,7 +2879,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 2
   Target: {fileID: 1304514155}
   Pole: {fileID: 448357870}
@@ -3255,7 +3254,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 4
   Target: {fileID: 1846989581}
   Pole: {fileID: 0}
@@ -3280,7 +3278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 2
   Target: {fileID: 700930730}
   Pole: {fileID: 378856924}
@@ -3626,7 +3623,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 3
   Target: {fileID: 1555955800}
   Pole: {fileID: 0}
@@ -3927,7 +3923,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db0053ef4d1ef0743b1c99d1ea7b85b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useLeap: 1
+  useLeapThumb: 1
+  useLeapIndex: 1
+  useLeapMiddle: 1
+  useLeapRing: 1
+  useLeapPinky: 1
   leapProvider: {fileID: 0}
 --- !u!1 &600252438
 GameObject:
@@ -3973,7 +3973,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 4
   Target: {fileID: 1787164830}
   Pole: {fileID: 0}
@@ -5083,7 +5082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &765238463
 Transform:
   m_ObjectHideFlags: 0
@@ -5346,7 +5345,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 3
   Target: {fileID: 1794438429}
   Pole: {fileID: 815754212}
@@ -6697,7 +6695,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 2
   Target: {fileID: 999563910}
   Pole: {fileID: 67094606}
@@ -6893,7 +6890,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 4
   Target: {fileID: 2111531428}
   Pole: {fileID: 0}
@@ -7618,7 +7614,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 3
   Target: {fileID: 292921278}
   Pole: {fileID: 0}
@@ -8076,7 +8071,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 2
   Target: {fileID: 1794948050}
   Pole: {fileID: 989258804}
@@ -9432,7 +9426,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 3
   Target: {fileID: 0}
   Pole: {fileID: 0}
@@ -10606,7 +10599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1652792637
 Transform:
   m_ObjectHideFlags: 0
@@ -10669,7 +10662,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 0
   ChainLength: 4
   Target: {fileID: 991124222}
   Pole: {fileID: 0}
@@ -13225,7 +13217,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeRK: 1
   ChainLength: 4
   Target: {fileID: 1555955800}
   Pole: {fileID: 0}
