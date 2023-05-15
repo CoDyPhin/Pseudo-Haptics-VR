@@ -152,6 +152,7 @@ public class FingerMovement : MonoBehaviour
         // Calculate the vector between the two given positions
         Vector3 direction = position2 - position1;
 
+        
         // Calculate the intersection of the vector and the plane passing through the intersection position and perpendicular to the vector
         Vector3 intersection = intersectionPosition - Vector3.Dot(intersectionPosition - position1, direction.normalized) * direction.normalized;
 
@@ -165,7 +166,10 @@ public class FingerMovement : MonoBehaviour
         float distance = Vector3.Dot(intersectionPosition - position1, direction.normalized);
 
         // Calculate the position that is at least 2 distance units away from the intersection point towards the given position
-        Vector3 result = intersectionPosition + Mathf.Max(2f, 2f - distance) * direction.normalized + 2f * toIntersection.magnitude * perpendicular.normalized;
+        //Vector3 result = intersectionPosition + Mathf.Max(0.5f, 0.5f - distance) * direction.normalized + 0.5f * toIntersection.magnitude * perpendicular.normalized;
+
+        // apply the perpendicular vector to the position1 with a distance of 0.5f
+        Vector3 result = position1 + 0.5f * perpendicular.normalized;
 
         return result;
     }

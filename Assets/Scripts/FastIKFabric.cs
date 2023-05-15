@@ -161,6 +161,7 @@ namespace DitzelGames.FastIK
             {
                 for (int i = 0; i < Positions.Length - 1; i++)
                     Positions[i + 1] = Vector3.Lerp(Positions[i + 1], Positions[i] + StartDirectionSucc[i], SnapBackStrength);
+                    
 
                 for (int iteration = 0; iteration < Iterations; iteration++)
                 {
@@ -170,8 +171,9 @@ namespace DitzelGames.FastIK
                     {
                         if (i == Positions.Length - 1)
                             Positions[i] = targetPosition; //set it to target
-                        else
+                        else{
                             Positions[i] = Positions[i + 1] + (Positions[i] - Positions[i + 1]).normalized * BonesLength[i]; //set in line on distance
+                        }
                     }
 
                     //forward
@@ -194,6 +196,7 @@ namespace DitzelGames.FastIK
                     var projectedPole = plane.ClosestPointOnPlane(polePosition);
                     var projectedBone = plane.ClosestPointOnPlane(Positions[i]);
                     var angle = Vector3.SignedAngle(projectedBone - Positions[i - 1], projectedPole - Positions[i - 1], plane.normal);
+                    //angle = Mathf.Min(90f, angle);
                     Positions[i] = Quaternion.AngleAxis(angle, plane.normal) * (Positions[i] - Positions[i - 1]) + Positions[i - 1];
                 }
             }
@@ -242,9 +245,9 @@ namespace DitzelGames.FastIK
                 current.rotation = Root.rotation * rotation;
         }
 
+#if UNITY_EDITOR
         void OnDrawGizmos()
         {
-#if UNITY_EDITOR
             var current = this.transform;
             for (int i = 0; i < ChainLength && current != null && current.parent != null; i++)
             {
@@ -254,8 +257,8 @@ namespace DitzelGames.FastIK
                 Handles.DrawWireCube(Vector3.up * 0.5f, Vector3.one);
                 current = current.parent;
             }
-#endif
         }
+#endif
 
     }
 }
