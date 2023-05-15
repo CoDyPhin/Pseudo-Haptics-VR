@@ -29,6 +29,9 @@ public class FingerMovement : MonoBehaviour
     [SerializeField] private List<GameObject> ringLinkPos = new List<GameObject>();
     [SerializeField] private List<GameObject> pinkyLinkPos = new List<GameObject>();
 
+    [SerializeField] private List<GameObject> deformables = new List<GameObject>();
+    private List<Collider> deformableColliders = new List<Collider>();
+
     //private List<Transform> fingers = new List<Transform>();
     
     // Start is called before the first frame update
@@ -40,52 +43,50 @@ public class FingerMovement : MonoBehaviour
             fingerMovementDirection[i] = Vector3.zero;
             fingerIKs[i] = fingerIKObjects[i].GetComponent<FastIKFabric>();
         }
-
-    }
-
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        
-
+        foreach (GameObject obj in deformables)
+        {
+            deformableColliders.Add(obj.GetComponent<Collider>());
+        }
     }
 
     void Update()
     {
+        bool isColliding = false;
         for (int i = 0; i < 5; i++)
         {
             fingerMovementDirection[i] = (fingerTips[i].transform.position - prevTipsPosition[i]);
             //prevTipsPosition[i] = fingerTips[i].transform.position;
-            Collider bunnyCol = GameObject.FindWithTag("Deformable").GetComponent<Collider>();
-            if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
-            {
-                Ray ray = new Ray(prevTipsPosition[i], fingerMovementDirection[i]);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Object")))
+            //Collider bunnyCol = GameObject.FindWithTag("Deformable").GetComponent<Collider>();
+            foreach (Collider bunnyCol in deformableColliders){
+                if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
                 {
-                    hit.point += 0.00001f * hit.normal;
-                    targetTransforms[i].position = hit.point;
-                    targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
-                    /*List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
-                    Hand _hand = _allHands[0];
-                    targetPoles[i].position = fingerTips[i].transform.position + _hand.Fingers[i].Direction.normalized * 0.5f;*/
-                    toggleReverseKinematics(i, true);
-                    if (forcePerFinger[i] <= 3.5f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.1f * fingerMovementDirection[i].magnitude, 3.5f);
-                    MeshDeformer deformer = hit.collider.GetComponent<MeshDeformer>();
-                    if (deformer != null)
+                    isColliding = true;
+                    Ray ray = new Ray(prevTipsPosition[i], fingerMovementDirection[i]);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Object")))
                     {
-                        deformer.AddDeformingForce(hit.point, forcePerFinger[i]);
+                        hit.point += 0.00001f * hit.normal;
+                        targetTransforms[i].position = hit.point;
+                        targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
+                        /*List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
+                        Hand _hand = _allHands[0];
+                        targetPoles[i].position = fingerTips[i].transform.position + _hand.Fingers[i].Direction.normalized * 0.5f;*/
+                        toggleReverseKinematics(i, true);
+                        if (forcePerFinger[i] <= 3.5f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.1f * fingerMovementDirection[i].magnitude, 3.5f);
+                        MeshDeformer deformer = hit.collider.GetComponent<MeshDeformer>();
+                        if (deformer != null)
+                        {
+                            deformer.AddDeformingForce(hit.point, forcePerFinger[i]);
+                        }
                     }
                 }
             }
-            else
-            {
+            if(!isColliding){
                 prevTipsPosition[i] = fingerTips[i].transform.position;
                 forcePerFinger[i] = 0f;
                 toggleReverseKinematics(i, false);
-                //fingerIKs[i].activateRK(false);
             }
+            //fingerIKs[i].activateRK(false);
         }
         
     }
