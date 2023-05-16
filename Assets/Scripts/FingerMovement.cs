@@ -32,6 +32,9 @@ public class FingerMovement : MonoBehaviour
     [SerializeField] private List<GameObject> deformables = new List<GameObject>();
     private List<Collider> deformableColliders = new List<Collider>();
 
+    private bool[] alreadyColliding = {false, false, false, false, false};
+    private HandPositions handPosScript;
+
     //private List<Transform> fingers = new List<Transform>();
     
     // Start is called before the first frame update
@@ -47,6 +50,7 @@ public class FingerMovement : MonoBehaviour
         {
             deformableColliders.Add(obj.GetComponent<Collider>());
         }
+        handPosScript = this.GetComponent<HandPositions>();
     }
 
     void Update()
@@ -58,6 +62,9 @@ public class FingerMovement : MonoBehaviour
             //prevTipsPosition[i] = fingerTips[i].transform.position;
             //Collider bunnyCol = GameObject.FindWithTag("Deformable").GetComponent<Collider>();
             foreach (Collider bunnyCol in deformableColliders){
+                if(bunnyCol.bounds.Contains(baseBones[i].position)){
+                    handPosScript.toggleBase(i, false);
+                }
                 if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
                 {
                     isColliding = true;
@@ -67,7 +74,10 @@ public class FingerMovement : MonoBehaviour
                     {
                         hit.point += 0.00001f * hit.normal;
                         targetTransforms[i].position = hit.point;
-                        targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
+                        if(!alreadyColliding[i]){
+                            alreadyColliding[i] = true;
+                            targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
+                        }
                         /*List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
                         Hand _hand = _allHands[0];
                         targetPoles[i].position = fingerTips[i].transform.position + _hand.Fingers[i].Direction.normalized * 0.5f;*/
@@ -81,12 +91,13 @@ public class FingerMovement : MonoBehaviour
                     }
                 }
             }
+
             if(!isColliding){
+                alreadyColliding[i] = false;
                 prevTipsPosition[i] = fingerTips[i].transform.position;
                 forcePerFinger[i] = 0f;
                 toggleReverseKinematics(i, false);
             }
-            //fingerIKs[i].activateRK(false);
         }
         
     }
@@ -96,7 +107,7 @@ public class FingerMovement : MonoBehaviour
         fingerIKs[i].enabled = state;
         //bool first = true;
         if(i == 0){
-            this.GetComponent<HandPositions>().toggleThumb(!state);
+            handPosScript.toggleThumb(!state);
             foreach (GameObject obj in thumbLinkPos){
                 /*if(first){
                     first = false;
@@ -106,7 +117,7 @@ public class FingerMovement : MonoBehaviour
             }
         }
         else if(i == 1){
-            this.GetComponent<HandPositions>().toggleIndex(!state);
+            handPosScript.toggleIndex(!state);
             foreach (GameObject obj in indexLinkPos){
                 /*if(first){
                     first = false;
@@ -116,7 +127,7 @@ public class FingerMovement : MonoBehaviour
             }
         }
         else if(i == 2){
-            this.GetComponent<HandPositions>().toggleMiddle(!state);
+            handPosScript.toggleMiddle(!state);
             foreach (GameObject obj in middleLinkPos){
                 /*if(first){
                     first = false;
@@ -126,7 +137,7 @@ public class FingerMovement : MonoBehaviour
             }
         }
         else if(i == 3){
-            this.GetComponent<HandPositions>().toggleRing(!state);
+            handPosScript.toggleRing(!state);
             foreach (GameObject obj in ringLinkPos){
                 /*if(first){
                     first = false;
@@ -136,7 +147,7 @@ public class FingerMovement : MonoBehaviour
             }
         }
         else if(i == 4){
-            this.GetComponent<HandPositions>().togglePinky(!state);
+            handPosScript.togglePinky(!state);
             foreach (GameObject obj in pinkyLinkPos){
                 /*if(first){
                     first = false;
@@ -152,7 +163,6 @@ public class FingerMovement : MonoBehaviour
     {
         // Calculate the vector between the two given positions
         Vector3 direction = position2 - position1;
-
         
         // Calculate the intersection of the vector and the plane passing through the intersection position and perpendicular to the vector
         Vector3 intersection = intersectionPosition - Vector3.Dot(intersectionPosition - position1, direction.normalized) * direction.normalized;
