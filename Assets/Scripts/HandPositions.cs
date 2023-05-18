@@ -81,79 +81,44 @@ public class HandPositions : MonoBehaviour
             List<Finger> _fingers = _hand.Fingers;
             int finger_num = 0;
             foreach(Transform finger in this.transform){
-                foreach(Transform rootBone in finger){
-                        rootBone.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                        rootBone.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
-                        int obj_num = 0;
-                        if(finger_num == 0 && !useLeapThumb){ 
-                            if(baseThumb){
-                                rootBone.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                rootBone.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
-                            }
-                            continue; 
-                        }
-                        if(finger_num == 1 && !useLeapIndex){ 
-                            if(baseIndex){
-                                rootBone.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                rootBone.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
-                            }
-                            continue; 
-                        }
-                        if(finger_num == 2 && !useLeapMiddle){ 
-                            if(baseMiddle){
-                                rootBone.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                rootBone.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
-                            }
-                            continue; 
-                        }
-                        if(finger_num == 3 && !useLeapRing){ 
-                            if(baseRing){
-                                rootBone.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                rootBone.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
-                            }
-                            continue; 
-                        }
-                        if(finger_num == 4 && !useLeapPinky){ 
-                            if(basePinky){
-                                rootBone.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                rootBone.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
-                            }
-                            continue; 
-                        }
-                        foreach (Transform bone1 in rootBone){
-                            if(obj_num == 2){ // bone connection
-                                bone1.position = _fingers[finger_num].bones[1 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                bone1.rotation = _fingers[finger_num].bones[1 + (finger_num != 0 ? 0 : 1)].Rotation;
-                                int obj_num2 = 0;
-                                foreach (Transform bone2 in bone1){
-                                    if(obj_num2 == 2){
-                                        bone2.position = _fingers[finger_num].bones[2 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                        bone2.rotation = _fingers[finger_num].bones[2 + (finger_num != 0 ? 0 : 1)].Rotation;
-                                        int obj_num3 = 0;
-                                        foreach (Transform bone3 in bone2){
-                                            if(obj_num3 == 2){
-                                                if(finger_num == 0){ bone3.position = _fingers[finger_num].TipPosition; }
-                                                else{
-                                                    bone3.position = _fingers[finger_num].bones[3 + (finger_num != 0 ? 0 : 1)].PrevJoint;
-                                                    bone3.rotation = _fingers[finger_num].bones[3 + (finger_num != 0 ? 0 : 1)].Rotation;
-                                                    int obj_num4 = 0;
-                                                    foreach (Transform bone4 in bone3){
-                                                        
-                                                        if(obj_num4 == 2){
-                                                            bone4.position = _fingers[finger_num].TipPosition;
-                                                        }
-                                                        obj_num4++;
-                                                    }
+                //int aux = 0;
+                foreach(Transform child in finger){
+                    /*if(aux == 0){
+                        child.position = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].PrevJoint;
+                        child.rotation = _fingers[finger_num].bones[0 + (finger_num != 0 ? 0 : 1)].Rotation;
+                        aux++;
+                    }
+                    else{*/
+                        child.position = _fingers[finger_num].bones[1 + (finger_num != 0 ? 0 : 1)].PrevJoint;
+                        child.rotation = _fingers[finger_num].bones[1 + (finger_num != 0 ? 0 : 1)].Rotation;
+                        int obj_num2 = 0;
+                        foreach (Transform bone2 in child){
+                            if(obj_num2 == 2){
+                                bone2.position = _fingers[finger_num].bones[2 + (finger_num != 0 ? 0 : 1)].PrevJoint;
+                                bone2.rotation = _fingers[finger_num].bones[2 + (finger_num != 0 ? 0 : 1)].Rotation;
+                                int obj_num3 = 0;
+                                foreach (Transform bone3 in bone2){
+                                    if(obj_num3 == 2){
+                                        if(finger_num == 0){ bone3.position = _fingers[finger_num].TipPosition; }
+                                        else{
+                                            bone3.position = _fingers[finger_num].bones[3 + (finger_num != 0 ? 0 : 1)].PrevJoint;
+                                            bone3.rotation = _fingers[finger_num].bones[3 + (finger_num != 0 ? 0 : 1)].Rotation;
+                                            int obj_num4 = 0;
+                                            foreach (Transform bone4 in bone3){
+                                                
+                                                if(obj_num4 == 2){
+                                                    bone4.position = _fingers[finger_num].TipPosition;
                                                 }
+                                                obj_num4++;
                                             }
-                                            obj_num3++;
                                         }
                                     }
-                                    obj_num2++;
+                                    obj_num3++;
                                 }
                             }
-                            obj_num++;
+                            obj_num2++;
                         }
+                    //}
                 }
                 finger_num++;
             }

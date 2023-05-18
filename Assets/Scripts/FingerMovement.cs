@@ -11,14 +11,15 @@ public class FingerMovement : MonoBehaviour
     [SerializeField] private GameObject[] fingerTips = new GameObject[5];
 
     private Vector3[] prevTipsPosition = new Vector3[5];
+    private Vector3[] prevTargetPos = new Vector3[5];
     private float[] forcePerFinger = {0f, 0f, 0f, 0f, 0f};
     //private bool handDetected = false;
     private Vector3[] fingerMovementDirection = new Vector3[5];
 
     [SerializeField] private Transform[] targetTransforms = new Transform[5];
     [SerializeField] private Transform[] targetPoles = new Transform[5];
-    [SerializeField] private Transform[] baseBones = new Transform[5];
-    [SerializeField] private Transform[] mainJoints = new Transform[5];
+    //[SerializeField] private Transform[] baseBones = new Transform[5];
+    //[SerializeField] private Transform[] mainJoints = new Transform[5];
 
     [SerializeField] private GameObject[] fingerIKObjects = new GameObject[5];
     private FastIKFabric[] fingerIKs = new FastIKFabric[5];
@@ -62,9 +63,9 @@ public class FingerMovement : MonoBehaviour
             //prevTipsPosition[i] = fingerTips[i].transform.position;
             //Collider bunnyCol = GameObject.FindWithTag("Deformable").GetComponent<Collider>();
             foreach (Collider bunnyCol in deformableColliders){
-                if(bunnyCol.bounds.Contains(baseBones[i].position)){
+                /*if(bunnyCol.bounds.Contains(baseBones[i].position)){
                     handPosScript.toggleBase(i, false);
-                }
+                }*/
                 if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
                 {
                     isColliding = true;
@@ -73,11 +74,13 @@ public class FingerMovement : MonoBehaviour
                     if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Object")))
                     {
                         hit.point += 0.00001f * hit.normal;
-                        targetTransforms[i].position = hit.point;
-                        if(!alreadyColliding[i]){
-                            alreadyColliding[i] = true;
-                            targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
+                        if(prevTargetPos[i] == Vector3.zero) targetTransforms[i].position = hit.point;
+                        else {
+                            prevTargetPos[i] = bunnyCol.bounds.Contains(Vector3.Lerp(prevTargetPos[i], hit.point, 0.5f)) ? prevTargetPos[i] : Vector3.Lerp(prevTargetPos[i], hit.point, 0.5f);
+                            targetTransforms[i].position = prevTargetPos[i];
                         }
+                        //targetTransforms[i].position = hit.point;
+                        //targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
                         /*List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
                         Hand _hand = _allHands[0];
                         targetPoles[i].position = fingerTips[i].transform.position + _hand.Fingers[i].Direction.normalized * 0.5f;*/
@@ -95,6 +98,7 @@ public class FingerMovement : MonoBehaviour
             if(!isColliding){
                 alreadyColliding[i] = false;
                 prevTipsPosition[i] = fingerTips[i].transform.position;
+                prevTargetPos[i] = Vector3.zero;
                 forcePerFinger[i] = 0f;
                 toggleReverseKinematics(i, false);
             }
