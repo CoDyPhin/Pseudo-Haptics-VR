@@ -79,13 +79,12 @@ public class FingerMovement : MonoBehaviour
                             prevTargetPos[i] = bunnyCol.bounds.Contains(Vector3.Lerp(prevTargetPos[i], hit.point, 0.5f)) ? prevTargetPos[i] : Vector3.Lerp(prevTargetPos[i], hit.point, 0.5f);
                             targetTransforms[i].position = prevTargetPos[i];
                         }
-                        //targetTransforms[i].position = hit.point;
-                        //targetPoles[i].position = GetPerpendicularIntersection(hit.point, baseBones[i].position, mainJoints[i].position);
-                        /*List<Hand> _allHands = Hands.Provider.CurrentFrame.Hands;
-                        Hand _hand = _allHands[0];
-                        targetPoles[i].position = fingerTips[i].transform.position + _hand.Fingers[i].Direction.normalized * 0.5f;*/
-                        toggleReverseKinematics(i, true);
-                        if (forcePerFinger[i] <= 3.5f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.1f * fingerMovementDirection[i].magnitude, 3.5f);
+                        float sum = fingerForceSum(forcePerFinger);
+                        if(sum < 20f)
+                        {
+                            forcePerFinger[i] = Mathf.Max(Mathf.Log(fingerMovementDirection[i].magnitude + 1f, 10f), sum - 20f);
+                            //(forcePerFinger[i] <= 5f) forcePerFinger[i] = Mathf.Max(forcePerFinger[i] + 0.1f * fingerMovementDirection[i].magnitude, 5f);
+                        }
                         MeshDeformer deformer = hit.collider.GetComponent<MeshDeformer>();
                         if (deformer != null)
                         {
@@ -104,6 +103,14 @@ public class FingerMovement : MonoBehaviour
             }
         }
         
+    }
+
+    float fingerForceSum(float[] forcePerFinger){
+        float sum = 0f;
+        foreach (float force in forcePerFinger){
+            sum += force;
+        }
+        return sum; 
     }
 
     void toggleReverseKinematics(int i, bool state)
