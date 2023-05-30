@@ -66,7 +66,7 @@ public class FingerMovement : MonoBehaviour
                 /*if(bunnyCol.bounds.Contains(baseBones[i].position)){
                     handPosScript.toggleBase(i, false);
                 }*/
-                if (bunnyCol.bounds.Contains(fingerTips[i].transform.position))
+                if (bunnyCol.gameObject.activeSelf && bunnyCol.bounds.Contains(fingerTips[i].transform.position))
                 {
                     isColliding = true;
                     Ray ray = new Ray(prevTipsPosition[i], fingerMovementDirection[i]);
